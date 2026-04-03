@@ -42,7 +42,13 @@ Plain English output for Beginner.
 - Honest about AI limitations — never oversell self-healing
 - Plain English output — no jargon for story-mode users
 
-## Polish List (Chunk 7)
+## Known Limitations
+- Framework version drift: generated code targets model training data versions. Future fix: version context slot to be added to buildCodePrompt.
+- k6 exit code 1 on saucedemo is expected — cart/login state is client-side JS, not HTTP-testable.
+- k6 full path hardcoded to C:\Program Files\k6\k6.exe — not portable across machines.
+
+## Current Build Phase
+# Polish List (Chunk 7)
 - Rename user levels to: Beginner, Tester, Engineer
 - Add Java language option (Selenium WebDriver, RestAssured, Playwright Java)
 - Add k6 JavaScript (HTTP/protocol level, not browser)
@@ -50,14 +56,18 @@ Plain English output for Beginner.
 - Copy button on JSON code block
 - Anti-rubber-stamp friction on results review
 
-## Chunk 7b
+# Chunk 7b
 - In-app test execution with live streaming output via SSE
 - Playwright runs via npx playwright test
 - k6 runs via k6 run
 - Live pass/fail per test, final summary
 
-## North Star Feature (future)
-Agentic mode: user provides URL, AI autonomously crawls 
-and maps the application, identifies critical flows, presents 
-findings for human review and selection, then generates code.
-Human role = judgment and selection, not recording.
+## North Star Extensions (Future)
+- Agentic mode: autonomous app crawl, flow identification, human review and selection
+- k6 browser API: Playwright-style tests with performance metrics in one script
+- Synthetic monitoring: scheduled smoke suite against production on a cron
+- Chaos/resilience testing: xk6-disruptor for Kubernetes fault injection
+- CI/CD integration docs per framework
+- Code generation caching: hash of (testCases + language + framework) as cache key
+- Framework version input: user supplies version, injected into generation prompt
+- k6 TypeScript support: already in UI, ensure generation prompt handles TS output correctly

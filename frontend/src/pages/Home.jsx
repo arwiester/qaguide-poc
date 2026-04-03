@@ -2,17 +2,15 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const USER_LEVELS = [
-  { value: 'story-mode',   label: 'Story Mode — I just need to test something' },
-  { value: 'novice',       label: 'Novice — I know the basics' },
-  { value: 'intermediate', label: 'Intermediate — I test regularly' },
-  { value: 'expert',       label: 'Expert — I know what I\'m doing' },
-  { value: 'grand-wizard', label: 'Grand Wizard — SDET/Automation Engineer' },
+  { value: 'beginner',  label: 'Beginner — I just need to test something' },
+  { value: 'tester',    label: 'Tester — I test regularly' },
+  { value: 'engineer',  label: 'Engineer — SDET / Automation Engineer' },
 ];
 
 export default function Home() {
   const navigate = useNavigate();
   const [url, setUrl] = useState('https://www.saucedemo.com');
-  const [userLevel, setUserLevel] = useState('novice');
+  const [userLevel, setUserLevel] = useState('tester');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 

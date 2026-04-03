@@ -2,10 +2,10 @@ const Anthropic = require('@anthropic-ai/sdk');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const VALID_LEVELS = ['story-mode', 'novice', 'intermediate', 'expert', 'grand-wizard'];
+const VALID_LEVELS = ['beginner', 'tester', 'engineer'];
 
 const LEVEL_INSTRUCTIONS = {
-  'story-mode': `
+  beginner: `
 You are writing for someone who has never done QA testing before.
 Use plain, friendly English. Avoid all technical jargon.
 Explain what each step means in everyday language.
@@ -13,23 +13,13 @@ Use phrases like "click the button" not "interact with the element".
 Describe what could go wrong in terms a non-technical person would understand.
 When explaining smoke tests, describe them as "a quick health check we run every time we release to make sure nothing obvious is broken".`,
 
-  'novice': `
-You are writing for someone with basic testing knowledge.
-Use simple language. Minimal jargon — if you use a technical term, briefly explain it.
-Steps should be clear and direct. Risk reasons should be relatable.`,
-
-  'intermediate': `
+  tester: `
 You are writing for a tester who tests regularly.
 Standard QA terminology is fine (test case, assertion, regression, selector, etc.).
-Be concise. Steps can assume familiarity with standard web testing patterns.`,
+Be concise. Steps can assume familiarity with standard web testing patterns.
+Include edge cases in risk assessments where relevant.`,
 
-  'expert': `
-You are writing for an experienced QA engineer.
-Use full QA and testing terminology freely.
-Be precise and thorough. Include edge cases in risk assessments.
-Regression reasoning should reference test stability and maintenance concerns.`,
-
-  'grand-wizard': `
+  engineer: `
 You are writing for an SDET or automation engineer.
 Be highly technical. In the riskReason and regressionReason fields, you may include
 CSS selector suggestions, Playwright locator hints (e.g. page.locator(), getByRole()),
@@ -39,7 +29,7 @@ For smoke candidates, use standard smoke/sanity terminology and reference CI/CD 
 };
 
 function buildPrompt(steps, userLevel) {
-  const levelInstructions = LEVEL_INSTRUCTIONS[userLevel] || LEVEL_INSTRUCTIONS['intermediate'];
+  const levelInstructions = LEVEL_INSTRUCTIONS[userLevel] || LEVEL_INSTRUCTIONS['tester'];
   const stepsJson = JSON.stringify(steps, null, 2);
 
   return `You are a QA analysis assistant. Analyze the following recorded browser interaction steps and generate test cases.
@@ -133,7 +123,7 @@ async function analyzeSteps(steps, userLevel) {
   return parsed;
 }
 
-const VALID_LANGUAGES = ['javascript', 'typescript', 'csharp', 'python'];
+const VALID_LANGUAGES = ['javascript', 'typescript', 'csharp', 'python', 'java'];
 
 const FRAMEWORK_INSTRUCTIONS = {
   'Playwright (UI)': `Generate Playwright UI tests.
@@ -183,7 +173,47 @@ const FRAMEWORK_INSTRUCTIONS = {
 - Each test case becomes a test_* method on a class that inherits unittest.TestCase.
 - Include setUp() that initialises webdriver.Chrome() and tearDown() that calls self.driver.quit().
 - Use self.driver.get(), self.driver.find_element(By.ID, ...), element.click(), element.send_keys() etc.`,
+    java: `Generate Selenium WebDriver tests in Java.
+- Use JUnit 5 as the test framework.
+- Import org.openqa.selenium.*, org.openqa.selenium.chrome.ChromeDriver, org.junit.jupiter.api.*
+- Each test case becomes a @Test method inside a class.
+- Include @BeforeEach that initialises ChromeDriver and @AfterEach that calls driver.quit().
+- Use driver.get(), driver.findElement(By.id()), element.click(), element.sendKeys() etc.
+- Add a // TODO: set BASE_URL constant at the top.`,
   },
+
+  'Selenium WebDriver Java': `Generate Selenium WebDriver tests in Java.
+- Use JUnit 5 as the test framework.
+- Import org.openqa.selenium.*, org.openqa.selenium.chrome.ChromeDriver, org.junit.jupiter.api.*
+- Each test case becomes a @Test method inside a class.
+- Include @BeforeEach that initialises ChromeDriver and @AfterEach that calls driver.quit().
+- Use driver.get(), driver.findElement(By.id()), element.click(), element.sendKeys() etc.
+- Add a // TODO: set BASE_URL constant at the top.`,
+
+  'RestAssured (API)': `Generate RestAssured API tests in Java.
+- Use JUnit 5 as the test framework.
+- Import io.restassured.RestAssured, io.restassured.response.Response, org.junit.jupiter.api.*
+- Set RestAssured.baseURI at class level with a // TODO: set baseURI comment.
+- Each test case becomes a @Test method using given().when().get(path).then().statusCode(200) style assertions.
+- Add a comment noting where to add auth headers.`,
+
+  'Playwright Java': `Generate Playwright Java tests.
+- Use JUnit 5 as the test framework.
+- Import com.microsoft.playwright.*, org.junit.jupiter.api.*
+- Each test case becomes a @Test method.
+- Include @BeforeEach that creates Playwright, Browser, BrowserContext, and Page instances.
+- Include @AfterEach that closes page, context, browser, and playwright in order.
+- Use page.navigate(), page.locator(), page.click(), page.fill(), assertThat(page).hasURL() etc.
+- Add a // TODO: set BASE_URL constant at the top.`,
+
+  'k6 (Load)': `Generate a k6 load test script in JavaScript.
+- Import http from 'k6/http' and { check, sleep } from 'k6'.
+- Export a default options object with stages: ramp to 1 VU over 5s, hold for 10s, ramp down to 0 over 5s. Add a comment: // TODO: increase VUs and duration for real load testing — these are minimal demo stages.
+- Add a BASE_URL constant at the top with a // TODO: set BASE_URL comment.
+- Each test case becomes a logical block inside the default export function.
+- Use http.get() or http.post() with check() assertions on response.status and response.body.
+- Add sleep(1) between logical blocks.
+- Add a comment at the top of the file: // k6 tests at HTTP/protocol level — not browser interactions. Install k6 separately: https://k6.io/docs/getting-started/installation/`,
 
   'RestSharp (API)': `Generate RestSharp API tests in C#.
 - Use NUnit as the test framework.
@@ -246,7 +276,7 @@ async function generateCode(testCases, language, framework) {
 
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 4096,
+    max_tokens: 8192,
     messages: [{ role: 'user', content: prompt }],
   });
 
