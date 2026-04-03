@@ -1,6 +1,23 @@
-const Anthropic = require('@anthropic-ai/sdk');
+const WORKER_URL = process.env.WORKER_URL;
+const WORKER_SECRET = process.env.WORKER_SECRET;
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+async function callClaude(payload) {
+  const response = await fetch(`${WORKER_URL}/v1/messages`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Worker-Secret': WORKER_SECRET,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Worker error ${response.status}: ${text}`);
+  }
+
+  return response.json();
+}
 
 const VALID_LEVELS = ['beginner', 'tester', 'engineer'];
 
@@ -86,7 +103,7 @@ The JSON must exactly match this structure:
 async function analyzeSteps(steps, userLevel) {
   const prompt = buildPrompt(steps, userLevel);
 
-  const message = await client.messages.create({
+  const message = await callClaude({
     model: 'claude-sonnet-4-6',
     max_tokens: 8192,
     messages: [{ role: 'user', content: prompt }],
@@ -274,7 +291,7 @@ ${testCasesJson}
 async function generateCode(testCases, language, framework) {
   const prompt = buildCodePrompt(testCases, language, framework);
 
-  const message = await client.messages.create({
+  const message = await callClaude({
     model: 'claude-sonnet-4-6',
     max_tokens: 8192,
     messages: [{ role: 'user', content: prompt }],

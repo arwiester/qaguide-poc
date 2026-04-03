@@ -1,4 +1,4 @@
-require('dotenv').config({ path: require('path').join(__dirname, '../../.env') });
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -100,7 +100,7 @@ app.post('/generate-code', async (req, res) => {
 });
 
 const PLAYWRIGHT_FRAMEWORKS = [
-  'Playwright (UI)', 'Playwright API', 'Playwright .NET', 'Playwright Python', 'Playwright Java',
+  'Playwright', 'Playwright API',
 ];
 
 app.post('/execute', (req, res) => {
