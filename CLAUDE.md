@@ -46,18 +46,29 @@ Plain English output for Beginner.
 - Framework version drift: generated code targets model training data versions. Future fix: version context slot to be added to buildCodePrompt.
 - k6 exit code 1 on saucedemo is expected — cart/login state is client-side JS, not HTTP-testable.
 - k6 full path hardcoded to C:\Program Files\k6\k6.exe — not portable across machines.
+- Code cache is in-memory only — clears on server restart. Prevents redundant Claude API calls within a session.
 
 ## Current Build Phase
-Chunk 8 — Polish and UX improvements
+Chunk 8 — Polish and UX improvements (in progress)
 
-## Chunk 8 — Polish Backlog
-- Results page too narrow — max-w-2xl needs to be wider (max-w-5xl) for code and terminal panels
-- Code block horizontal scroll cramped — needs more breathing room
-- Log panel doesn't auto-scroll during test execution
-- Remove debug console.log lines left from Chunk 7b development
-- API nudge verify — should show for Tester only, confirm behavior matches spec
-- backend/tmp/ cleanup on server restart — orphaned dirs from crashed runs
-- k6 binary path hardcoded to C:\Program Files\k6\k6.exe — needs PATH resolution instead
+### Completed
+- Results page widened (max-w-5xl)
+- Code block breathing room
+- Log panel auto-scroll + taller
+- Debug console.logs removed
+- k6 PATH resolution
+- backend/tmp cleanup on restart
+- API nudge visible to all levels
+- Page jump on Run Tests fixed
+- Code generation in-memory cache
+- Framework-first grouped dropdown with language filtering (frontend — prompt 7a pending confirmation)
+
+### Pending
+- Backend code generation templates for new frameworks:
+  Cucumber (JS, TS, Java, Python, Ruby) and Reqnroll (C#)
+- Ruby added to Selenium WebDriver language options
+- VALID_FRAMEWORKS and VALID_LANGUAGES in analyzer.js updated to match new matrix
+
 
 ## North Star Extensions (Future)
 - Agentic mode: autonomous app crawl, flow identification, human review and selection
