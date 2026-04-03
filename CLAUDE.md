@@ -49,25 +49,29 @@ Plain English output for Beginner.
 - Code cache is in-memory only — clears on server restart. Prevents redundant Claude API calls within a session.
 
 ## Current Build Phase
-Chunk 8 — Polish and UX improvements (in progress)
+Chunk 9 — Deploy
 
-### Completed
-- Results page widened (max-w-5xl)
+## Chunk 8 — Completed
+- Layout widened (max-w-5xl)
 - Code block breathing room
 - Log panel auto-scroll + taller
 - Debug console.logs removed
 - k6 PATH resolution
 - backend/tmp cleanup on restart
-- API nudge visible to all levels
+- API nudge — all levels, Zap icon, amber styling, correct copy
 - Page jump on Run Tests fixed
-- Code generation in-memory cache
-- Framework-first grouped dropdown with language filtering (frontend — prompt 7a pending confirmation)
+- Code generation in-memory cache (SHA-256 keyed)
+- Framework-first grouped dropdown with optgroup
+- Full framework/language matrix — Cucumber, Reqnroll, Ruby added
+- Run Tests hidden for Cucumber and Reqnroll
+- Summary card redesign — risk posture badge, stat blocks, risk bar
+- lucide-react installed frontend
 
-### Pending
-- Backend code generation templates for new frameworks:
-  Cucumber (JS, TS, Java, Python, Ruby) and Reqnroll (C#)
-- Ruby added to Selenium WebDriver language options
-- VALID_FRAMEWORKS and VALID_LANGUAGES in analyzer.js updated to match new matrix
+## Chunk 9 — Deploy Scope
+- Google Cloud Run for backend
+- Firebase Hosting for frontend
+- Environment variables for ANTHROPIC_API_KEY
+- One shareable URL
 
 
 ## North Star Extensions (Future)
@@ -79,3 +83,5 @@ Chunk 8 — Polish and UX improvements (in progress)
 - Code generation caching: hash of (testCases + language + framework) as cache key
 - Framework version input: user supplies version, injected into generation prompt
 - k6 TypeScript support: already in UI, ensure generation prompt handles TS output correctly
+- Dark mode: full Results page dark theme using Tailwind dark: variants. 
+  Reference: Dark Reader +50 brightness, -40 contrast, +5 sepia warm tone.
