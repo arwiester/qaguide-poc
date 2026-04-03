@@ -2,12 +2,14 @@ require('dotenv').config({ path: require('path').join(__dirname, '../../.env') }
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
 const fs = require('fs');
+const crypto = require('crypto');
 const { startRecording, stopRecording } = require('./recorder');
 const { analyzeSteps, generateCode, VALID_LEVELS, VALID_LANGUAGES } = require('./analyzer');
 
 const app = express();
+const codeCache = new Map();
 const PORT = 3001;
 
 app.use(cors({ origin: 'http://localhost:5173' }));
@@ -78,8 +80,18 @@ app.post('/generate-code', async (req, res) => {
     return res.status(400).json({ error: 'framework is required' });
   }
 
+  const cacheKey = crypto.createHash('sha256')
+    .update(JSON.stringify(testCases) + language + framework)
+    .digest('hex');
+
+  if (codeCache.has(cacheKey)) {
+    console.log('Code cache hit — skipping Claude API call');
+    return res.set('X-Cache', 'HIT').json({ code: codeCache.get(cacheKey), language, framework });
+  }
+
   try {
     const code = await generateCode(testCases, language, framework);
+    codeCache.set(cacheKey, code);
     res.json({ code, language, framework });
   } catch (err) {
     console.error('Code generation failed:', err);
@@ -114,7 +126,21 @@ app.post('/execute', (req, res) => {
 
     let done = false;
 
-    const child = spawn('C:\\Program Files\\k6\\k6.exe', ['run', testFile], {
+    const K6_FALLBACK = 'C:\\Program Files\\k6\\k6.exe';
+    let k6Path;
+    try {
+      k6Path = execSync(process.platform === 'win32' ? 'where k6' : 'which k6').toString().trim().split('\n')[0].trim();
+    } catch {
+      k6Path = K6_FALLBACK;
+    }
+    if (!fs.existsSync(k6Path)) {
+      send('log', { line: 'k6 not found. Install k6 and ensure it is in your PATH.' });
+      send('done', { exitCode: 1, passed: false });
+      res.end();
+      return;
+    }
+
+    const child = spawn(k6Path, ['run', testFile], {
       cwd: tmpDir,
       env: { ...process.env, FORCE_COLOR: '0' },
       shell: false,
@@ -212,18 +238,6 @@ module.exports = defineConfig({
     console.error('[SPAWN ERROR]', err);
   });
 
-  child.on('close', (code, signal) => {
-    console.log('[SPAWN CLOSE] exit code:', code, 'signal:', signal);
-  });
-
-  child.stdout.on('data', (data) => {
-    console.log('[STDOUT]', data.toString());
-  });
-
-  child.stderr.on('data', (data) => {
-    console.log('[STDERR]', data.toString());
-  });
-
   // Step 6 — Stream output via SSE
   function send(event, data) {
     res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
@@ -269,6 +283,15 @@ module.exports = defineConfig({
     }
   });
 });
+
+const TMP_ROOT = path.join(__dirname, '..', 'tmp');
+if (fs.existsSync(TMP_ROOT)) {
+  const items = fs.readdirSync(TMP_ROOT);
+  items.forEach(item => fs.rmSync(path.join(TMP_ROOT, item), { recursive: true, force: true }));
+  console.log(`Cleaned ${items.length} orphaned tmp items on startup`);
+} else {
+  fs.mkdirSync(TMP_ROOT, { recursive: true });
+}
 
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
