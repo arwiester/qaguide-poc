@@ -125,8 +125,8 @@ function ExecutionPanel({ code, language, framework }) {
   const logBottomRef = useRef(null);
 
   useEffect(() => {
-    if (logs.length > 0) {
-      logBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (logs.length > 0 && logBottomRef.current) {
+      logBottomRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }, [logs]);
 
@@ -210,31 +210,31 @@ function ExecutionPanel({ code, language, framework }) {
         </p>
       )}
 
-      {logs.length > 0 && (
-        <div className="bg-gray-900 rounded p-3 max-h-[32rem] overflow-y-auto font-mono text-xs space-y-0.5">
-          {logs.map((entry, i) => (
-            <div key={i} className={
-              entry.type === 'pass' ? 'text-green-400' :
-              entry.type === 'fail' ? 'text-red-400' :
-              'text-gray-300'
-            }>
-              {entry.type === 'pass' ? '✓ ' : entry.type === 'fail' ? '✗ ' : '  '}
-              {entry.line}
-            </div>
-          ))}
-          <div ref={logBottomRef} />
-        </div>
-      )}
+      <div className={`bg-gray-900 rounded p-3 max-h-[32rem] overflow-y-auto font-mono text-xs space-y-0.5 ${logs.length > 0 ? '' : 'hidden'}`}>
+        {logs.map((entry, i) => (
+          <div key={i} className={
+            entry.type === 'pass' ? 'text-green-400' :
+            entry.type === 'fail' ? 'text-red-400' :
+            'text-gray-300'
+          }>
+            {entry.type === 'pass' ? '✓ ' : entry.type === 'fail' ? '✗ ' : '  '}
+            {entry.line}
+          </div>
+        ))}
+        <div ref={logBottomRef} />
+      </div>
 
-      {summary && (
-        <div className={`text-sm font-medium rounded px-3 py-2 ${
-          summary.passed
+      <div className={`text-sm font-medium rounded px-3 py-2 ${
+        summary
+          ? summary.passed
             ? 'bg-green-50 border border-green-200 text-green-700'
             : 'bg-red-50 border border-red-200 text-red-700'
-        }`}>
-          {summary.passed ? '✓ All tests passed' : '✗ Some tests failed'} — exit code {summary.exitCode ?? 'unknown'}
-        </div>
-      )}
+          : 'hidden'
+      }`}>
+        {summary && (
+          <>{summary.passed ? '✓ All tests passed' : '✗ Some tests failed'} — exit code {summary.exitCode ?? 'unknown'}</>
+        )}
+      </div>
     </div>
   );
 }
