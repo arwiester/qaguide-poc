@@ -48,19 +48,16 @@ Plain English output for Beginner.
 - k6 full path hardcoded to C:\Program Files\k6\k6.exe — not portable across machines.
 
 ## Current Build Phase
-# Polish List (Chunk 7)
-- Rename user levels to: Beginner, Tester, Engineer
-- Add Java language option (Selenium WebDriver, RestAssured, Playwright Java)
-- Add k6 JavaScript (HTTP/protocol level, not browser)
-- Mocks/stubs/service virtualization help section below generated code
-- Copy button on JSON code block
-- Anti-rubber-stamp friction on results review
+Chunk 8 — Polish and UX improvements
 
-# Chunk 7b
-- In-app test execution with live streaming output via SSE
-- Playwright runs via npx playwright test
-- k6 runs via k6 run
-- Live pass/fail per test, final summary
+## Chunk 8 — Polish Backlog
+- Results page too narrow — max-w-2xl needs to be wider (max-w-5xl) for code and terminal panels
+- Code block horizontal scroll cramped — needs more breathing room
+- Log panel doesn't auto-scroll during test execution
+- Remove debug console.log lines left from Chunk 7b development
+- API nudge verify — should show for Tester only, confirm behavior matches spec
+- backend/tmp/ cleanup on server restart — orphaned dirs from crashed runs
+- k6 binary path hardcoded to C:\Program Files\k6\k6.exe — needs PATH resolution instead
 
 ## North Star Extensions (Future)
 - Agentic mode: autonomous app crawl, flow identification, human review and selection
