@@ -20,8 +20,8 @@ Built for anyone who needs to test, technical or not.
 
 ## Prerequisites
 
-- Node.js v18 or higher: https://nodejs.org/
-- Git: https://git-scm.com/
+- [Node.js](https://nodejs.org/) v18 or higher
+- [Git](https://git-scm.com/)
 - A WORKER_SECRET value. Get this from Andrew directly.
 
 ---
@@ -30,29 +30,43 @@ Built for anyone who needs to test, technical or not.
 
 ### 1. Clone the repo
 
+```bash
 git clone https://github.com/arwiester/qaguide-poc.git
 cd qaguide-poc
+```
 
-### 2. Install dependencies
+### 2. Install backend dependencies
 
+```bash
 cd backend
 npm install
-cd ../frontend
+cd ..
+```
+
+### 3. Install frontend dependencies
+
+```bash
+cd frontend
 npm install
 cd ..
+```
 
-### 3. Create backend/.env
+### 4. Create backend/.env
 
-Create a file at backend/.env:
+Create a file at `backend/.env` with the following content:
 
+```
 WORKER_URL=https://qaguide-proxy.arwiester.workers.dev
 WORKER_SECRET=get_this_from_andrew
+```
 
-### 4. Install Playwright browsers
+### 5. Install Playwright browsers
 
+```bash
 cd backend
 npx playwright install chromium
 cd ..
+```
 
 ---
 
@@ -62,13 +76,17 @@ Two terminals required.
 
 **Terminal 1 — Backend:**
 
+```bash
 cd backend
 npm start
+```
 
 **Terminal 2 — Frontend:**
 
+```bash
 cd frontend
 npm run dev
+```
 
 Open http://localhost:5173 in your browser.
 
@@ -76,9 +94,9 @@ Open http://localhost:5173 in your browser.
 
 ## Demo Flow
 
-Use saucedemo.com as the target URL. Login, inventory, cart, and checkout flows all work well.
+Use [saucedemo.com](https://www.saucedemo.com) as the target URL. Login, inventory, cart, and checkout flows all work well.
 
-Credentials: standard_user / secret_sauce
+Credentials: `standard_user` / `secret_sauce`
 
 ---
 
@@ -94,7 +112,7 @@ Credentials: standard_user / secret_sauce
 
 - Recording requires a local backend. By design for v0.
 - k6 must be installed separately: https://k6.io/docs/get-started/installation/
-- k6 path is hardcoded to C:\Program Files\k6\k6.exe. Windows only for now.
+- k6 path is hardcoded to `C:\Program Files\k6\k6.exe`. Windows only for now.
 - Generated code targets current framework versions but may need minor adjustments.
 - Code cache clears on backend restart.
 
@@ -102,4 +120,4 @@ Credentials: standard_user / secret_sauce
 
 ## Feedback
 
-This is a POC. Nothing is precious. If something is broken, confusing, or missing, that's the point.
+This is a POC. Nothing is precious. If something is broken, confusing, or missing, that is the point.
