@@ -35,23 +35,15 @@ git clone https://github.com/arwiester/qaguide-poc.git
 cd qaguide-poc
 ```
 
-### 2. Install backend dependencies
+### 2. Install dependencies
 
 ```bash
-cd backend
 npm install
-cd ..
+cd backend && npm install && cd ..
+cd frontend && npm install && cd ..
 ```
 
-### 3. Install frontend dependencies
-
-```bash
-cd frontend
-npm install
-cd ..
-```
-
-### 4. Create backend/.env
+### 3. Create backend/.env
 
 Create a file at `backend/.env` with the following content:
 
@@ -60,7 +52,7 @@ WORKER_URL=https://qaguide-proxy.arwiester.workers.dev
 WORKER_SECRET=get_this_from_andrew
 ```
 
-### 5. Install Playwright browsers
+### 4. Install Playwright browsers
 
 ```bash
 cd backend
@@ -72,23 +64,11 @@ cd ..
 
 ## Running the App
 
-Two terminals required.
-
-**Terminal 1 — Backend:**
-
 ```bash
-cd backend
-npm start
-```
-
-**Terminal 2 — Frontend:**
-
-```bash
-cd frontend
 npm run dev
 ```
 
-Open http://localhost:5173 in your browser.
+This starts both the backend and frontend together. Open http://localhost:5173 in your browser.
 
 ---
 
